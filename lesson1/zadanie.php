@@ -74,6 +74,7 @@ class PairTag extends Tag
         elseif($attr instanceof PairTag){
 
             $this->md [] = $this->tag;
+           // print_r($this->md);
             return $this->md;
         }
         }
@@ -90,19 +91,20 @@ $img->attr('width', '100');
 
 $hr = new SingleTag('hr');
 
-
+$form = new PairTag('form');
 
 $a = new PairTag('a');
 $a->attr('href', './nz');
 $a->appendChild($img);
 $a->appendChild($hr);
 
+$form->appendChild($a);
 
-$a->render();
+//$a->render();
 
 //echo "<pre>";
 //print_r($b);
-$ec = htmlspecialchars ($a->render());
+$ec = htmlspecialchars ($form->render());
 echo $ec;
 //echo '<br>';
 //$b->appendChild($a);
