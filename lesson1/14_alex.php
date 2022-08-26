@@ -17,13 +17,9 @@ class Tag
     {
         if (!$this->attributes)
         {
-          //  echo 'ff';
-
             return '';
         }
         $attr = [];
-       // var_dump($this->attributes);
-
         foreach ($this->attributes as $arg => $value)
         {
             if (is_null($value))
