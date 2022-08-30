@@ -6,7 +6,7 @@ Interface IStorage{
     public function get(string $key) : mixed;
 }
 
-class Storoge implements IStorage{
+class Storoge implements IStorage, JsonSerializable{
     public $istoroge = [];
     public function add(string $key, mixed $data): void
     {
@@ -21,13 +21,7 @@ class Storoge implements IStorage{
     }
     public function contains(string $key): bool
     {
-        if (array_key_exists($key, $this->istoroge))
-        {
-            return true;
-        }
-        else{
-            return false;
-        }
+        return array_key_exists($key, $this->istoroge);
         // TODO: Implement contains() method.
     }
     public function get(string $key): mixed
@@ -40,9 +34,14 @@ class Storoge implements IStorage{
         }
         // TODO: Implement get() method.
     }
-
+    public function jsonSerialize(): mixed{
+        return $this;
+    }
+    public function __toString(){
+        return json_encode($this->jsonSerialize(), JSON_UNESCAPED_UNICODE);
+    }
 }
-class Animal{
+class Animal implements JsonSerializable {
     public $name;
     public $health;
     public $alive;
@@ -67,16 +66,24 @@ class Animal{
             $this->alive = false;
         }
     }
+    public function jsonSerialize(): mixed{
+        return $this;
+    }
+
+    public function __toString(){
+        return json_encode($this->jsonSerialize(), JSON_UNESCAPED_UNICODE);
+    }
 }
 class JSONLogger{
+
     protected array $objects = [];
 
-    public function addObject($obj) : void{
+    public function addObject(JsonSerializable $obj) : void{
         $this->objects[] = $obj;
     }
 
     public function log(string $betweenLogs = ',') : string{
-        $logs = array_map(function($obj){
+        $logs = array_map(function(JsonSerializable $obj){
             return $obj->jsonSerialize();
         }, $this->objects);
 
@@ -87,20 +94,15 @@ class JSONLogger{
 $res = new Storoge();
 $res->add('key1', 'value1');
 $res->add('key2', 'value2');
-echo '<pre>';
-//var_dump($res->contains('ke1'));
-var_dump($res);
-echo '<br>';
-print_r($res->get('key'));
-
 $a1 = new Animal('Murzik', 20, 5);
 $a2 = new Animal('Bobik', 30, 3);
 $gameStorage = new Storoge();
 $gameStorage->add('test', mt_rand(1, 10));
-
 $loger = new JSONLogger();
-//$loger->addObject($a1);
-//$loger->addObject($a2);
+$loger->addObject($a1);
+$loger->addObject($a2);
 $loger->addObject($gameStorage);
+$loger->addObject($res);
 
-echo $loger->log('<br>') . 'hr';
+
+echo $loger->log('<br>') . '<hr>';

@@ -68,8 +68,6 @@ class PairTag extends Tag
 
     public function render(): string
     {
-        //echo '<pre>';
-        //var_dump($this->childs);
         $childs = '';
 
         if ($this->childs)
@@ -77,9 +75,7 @@ class PairTag extends Tag
 
             foreach ($this->childs as $child)
             {
-                //echo $childs; echo '<br>';
                 echo '<pre>';
-              //  print_r($child);
                 $childs.= $child->render();
 
             }

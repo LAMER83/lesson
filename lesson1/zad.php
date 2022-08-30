@@ -10,39 +10,47 @@ class Tag
     }
     public function renderArgs()
     {
-        var_dump($this->attr);
+      //  var_dump($this->attr);
+        if (!$this->attr)
+        {
+            return '';
+        }
+        $att = [];
         foreach ($this->attr as $value=>$key)
         {
+            if (is_null($key))
+            {
+                $att [] = $attr;
+            }
+            else
+            {
+                $att [] = "$value=\"$key\"";
+            }
 
         }
+        return ' ' . implode(' ', $att);
     }
     public function attr($value, $key)
     {
         $this->attr [$value] = $key;
         return $this;
     }
-/*    protected function renderArgs(): string
+    public function render(): string
     {
-        if (!$this->attributes)
-        {
-            return '';
-        }
-        $attr = [];
-        foreach ($this->attributes as $arg => $value)
-        {
-            if (is_null($value))
-            {
-                $attr[] = $arg;
-            }
-            else
-            {
-                $attr[] = "$arg=\"$value\"";
-            }
-        }
-        return ' ' . implode(' ', $attr);s
-    }*/
 
-
+        return sprintf(
+        //Разбор макета
+        //< - символ как есть
+        //%1 - нумерация аргумента
+        //$s - аргумент типа строка
+        //%2 - нумерация аргумента (аргумент номер2)
+        //> - символ как есть
+            '<%1$s%2$s>',
+            // передаем тег
+            $this->tag,
+            $this->renderArgs()
+        );
+    }
 }
 
 class SingleTag extends Tag
@@ -51,11 +59,27 @@ class SingleTag extends Tag
 
 class PairTag extends Tag
 {
+    protected array$childs = [];
 
-    public function render()
+    public function  appendChild(Tag $child_tag): Tag
+    {
+        $this->childs[] = $child_tag;
+        return $this;
+    }
+
+    public function render() : string
     {
         $childs = '';
+        if ($this->childs)
+        {
 
+            foreach ($this->childs as $child)
+            {
+                echo '<pre>';
+                $childs.= $child->render();
+
+            }
+        }
         return sprintf(
             '<%1$s%2$s>%3$s</%1$s>',
             $this->tag,
@@ -66,10 +90,15 @@ class PairTag extends Tag
 }
 
 
+$img = new SingleTag('img');
+$img->attr('src', 'f1.jpj');
+$img->attr('alt', 'f1 not fount');
+$form = new PairTag('form');
+$label = new PairTag('label');
+$label->appendChild($img);
+$form->appendChild($label);
 
-$form = new PairTag('label');
-$form->attr('src', 'f1.jpj');
-$form->attr('imj', 'ieche');
+
 
 $ec = htmlspecialchars ($form->render());
 echo $ec;
