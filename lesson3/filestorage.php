@@ -4,36 +4,42 @@ class FileStorage implements IStorage{
 	protected array $records = [];
 	protected int $ai = 0;
 	protected string $dbPath;
-
-	public function __construct(string $dbPath){
+    protected static $instance = [];
+	protected function __construct(string $dbPath){
 		$this->dbPath = $dbPath;
 
 		if(file_exists($this->dbPath)){
 			$data = json_decode(file_get_contents($this->dbPath), true);
             if (empty($data)){
                 $this->ai = 0;
+                return 'файл пуст';
             }
             else{
                 $this->records = $data['records'];
                 $this->ai = $data['ai'];
             }
-
 		}
 	}
 
-	public function create(array $fields) : int{
+    public static function getInstance(string $db) : self{
+//self заменить на static - при наследование возможность переопределить
+        if(!array_key_exists($db, self::$instance)){
+                self::$instance[$db] = new self($db);
+        }
+        return self::$instance[$db];
+    }
 
+	public function create(array $fields) : int{
 		$id = ++$this->ai;
 		$this->records[$id] = [];
-        //Добавить foreach ()
-        $this->records [$id] [] = $fields[0];
-        $this->records [$id] [] = $fields[1];
+        $this->records [$id] ['title'] = $fields[0];
+        $this->records [$id] ['content'] = $fields[1];
 		$this->save();
 		return $id;
 	}
 
 	public function get(int $id) : ?array{
-		return $this->records[$id] ?? null;
+		return $this->records [$id] ?? null;
 	}
 
 	public function remove(int $id) : bool{
@@ -42,7 +48,6 @@ class FileStorage implements IStorage{
 			$this->save();
 			return true;
 		}
-
 		return false;
 	}
 
@@ -52,7 +57,6 @@ class FileStorage implements IStorage{
 			$this->save();
 			return true;
 		}
-
 		return false;
 	}
 

@@ -5,13 +5,20 @@ class Article{
 	public string $title; 
 	public string $content; 
 	protected IStorage $storage;
+    protected array $isValid;
 
 	public function __construct(IStorage $storage){
 		$this->storage = $storage;
 	}
 
 	public function create(array $fields){
-		$this->id = $this->storage->create();
+        $this->isValid = $fields;
+        if (!$this->isValid()) {
+           $this->id = $this->storage->create($fields);
+        }
+        else{
+            return NULL;
+        }
 	}
 
 	public function load(int $id){
@@ -24,6 +31,7 @@ class Article{
 		$this->id = $id;
 		$this->title = $data['title'];
 		$this->content = $data['content'];
+        return $this->title . ' ' .  $this->content;
 	}
 
 	public function save(){
@@ -32,4 +40,13 @@ class Article{
 			'content' => $this->content
 		]);
 	}
+
+    protected function isValid() : bool{
+        foreach ($this->isValid as $key=>$value){
+            if (empty($value)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

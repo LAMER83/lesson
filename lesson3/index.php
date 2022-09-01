@@ -4,10 +4,22 @@ include_once('istorage.php');
 include_once('article.php');
 include_once('filestorage.php');
 
-$art = new Article();
-$art->create();
+$fs = FileStorage::getInstance('articles.txt');
+//$fs = new FileStorage ('articles.txt');
+$art = new Article($fs);
+//$art->create(array("Art3", "Hard3"));
+$get = $art->load(1);
 echo '<pre>';
-var_dump($art);
+echo $get;
+//var_dump($fs);
+$test = FileStorage::getInstance('article.txt');
+//echo '<hr>';
+//var_dump($test);
+$test1 = FileStorage::getInstance('article.txt');
+//echo '<hr>';
+//var_dump($test1);
+
+
 //$artStorage = new FileStorage('articles.txt');
 //echo '<pre>';
 //$artStorage->create(['New art', 'Content new art']);
